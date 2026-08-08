@@ -1,0 +1,3 @@
+{"sessionId": "studio-scene-mismatch", "runId": "pre-fix", "hypothesisId": "E", "location": "DestinationApp:sidebarLayout", "msg": "[DEBUG] Sidebar measured", "data": {"widthPx": 376, "heightPx": 1440, "backgroundAlpha": 0.12}, "ts": 1785285571792}
+{"sessionId": "studio-scene-mismatch", "runId": "pre-fix", "hypothesisId": "E", "location": "DestinationApp:rootLayout", "msg": "[DEBUG] Catalog root measured", "data": {"widthPx": 2560, "heightPx": 1440, "density": 2, "background": "#1C1C1C"}, "ts": 1785285571803}
+{"sessionId": "studio-scene-mismatch", "runId": "pre-fix", "hypothesisId": "A,D", "location": "DestinationStudioStage:initial", "msg": "[DEBUG] Studio USD load started", "data": {"source": "studio/AAA_MainScene.usda"}, "ts": 1785285593686}

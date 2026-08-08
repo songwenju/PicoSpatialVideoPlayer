@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--    fill colors-->
+    <color name="fill_primary">#FF282828</color>
+    <color name="fill_secondary">#66000000</color>
+    <color name="fill_tertiary">#0A000000</color>
+    <color name="bg_thin">#33000000</color>
+    <color name="bg_thickest">#DEDEDE</color>
+
+    <!--    Label Color-->
+    <color name="label_primary">#FF000000</color>
+    <color name="label_secondary">#CC000000</color>
+    <color name="label_tertiary">#80000000</color>
+    <color name="label_quaternary">#4D000000</color>
+    <color name="label_light">#66000000</color>
+    <color name="label_primary_light">#FF000000</color>
+
+    <!--    Semantic Color-->
+    <color name="error">#FF4D4D</color>
+    <color name="alert">#FFBF00</color>
+    <color name="passable">#B3FF66</color>
+    <color name="interaction">#3377FF</color>
+    <!--    Line Color -->
+    <color name="divider_line">#3D808080</color>
+
+    <!--    state layer color-->
+    <color name="lighten_hover">#1F000000</color>
+    <color name="lighten_press">#3D000000</color>
+</resources>

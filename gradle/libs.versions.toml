@@ -1,0 +1,64 @@
+[versions]
+agp = "8.11.0"
+kotlin = "2.1.21"
+ksp = "2.1.21-1.0.26"
+composeCompiler = "2.1.21"
+
+## PICO
+## SpatialSDK
+spatialBOM = "6.1.5"
+framework-extension = "0.8.10"
+mediapackVersion = "0.3.9-rc.0"
+
+
+coreKtx = "1.10.1"
+junit = "4.13.2"
+junitVersion = "1.3.0"
+espressoCore = "3.7.0"
+appcompat = "1.7.1"
+material = "1.13.0"
+lifecycleRuntimeKtx = "2.8.4"
+activityCompose = "1.8.0"
+androidx-lifecycle = "2.8.4"
+runtimeLivedata = "1.7.4"
+exoPlayerVersion = "1.4.1"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleRuntimeKtx" }
+lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "androidx-lifecycle" }
+lifecycle-viewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
+androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
+
+## Spatial UI 配置依赖项
+spatialBOM = { group = "com.pico.spatial", name = "bom", version.ref = "spatialBOM" }
+spatialcore = { group = "com.pico.spatial.core", name = "core" }
+spatialui-design = { group = "com.pico.spatial.ui", name = "design" }
+spatialui-foundation = { group = "com.pico.spatial.ui", name = "foundation" }
+spaceos-framework-extension = { group = "com.spaceos.framework.extension", name = "spaceos-framework-extension", version.ref = "framework-extension" }
+spatial-tracking = { group = "com.pico.spatial.tracking", name = "tracking", version.ref = "spatialBOM" }
+mediapack-common = { group = "com.picoxr.mediapack", name = "common", version.ref = "mediapackVersion" }
+mediapack-player = { group = "com.picoxr.mediapack", name = "player", version.ref = "mediapackVersion" }
+mediapack-ui = { group = "com.picoxr.mediapack", name = "ui", version.ref = "mediapackVersion" }
+mediapack-playbackcore = { group = "com.picoxr.mediapack", name = "playbackcore", version.ref = "mediapackVersion" }
+# ExoPlayer 配置依赖项
+exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "exoPlayerVersion" }
+exoPlayerCommon = { group = "androidx.media3", name = "media3-common", version.ref = "exoPlayerVersion" }
+
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+google-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "composeCompiler" }
