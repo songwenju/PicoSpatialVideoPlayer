@@ -21,6 +21,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "DestinationVideo"
+rootProject.name = "PicoSpatialVideoPlayer"
 include(":app")
  
