@@ -1,138 +1,51 @@
 package com.picoxr.destinationvideo.destination
 
-import android.app.Activity
-import android.app.Application
-import android.app.SpaceContext
-import android.content.Intent
-import android.util.Log
+import android.os.Bundle
+import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
-import androidx.lifecycle.ProcessLifecycleOwner
-import androidx.lifecycle.lifecycleScope
-import com.pico.spatial.core.platform.SpatialBuild
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 import com.pico.spatial.ui.design.PicoTheme
 import com.pico.spatial.ui.design.Text
 import com.pico.spatial.ui.platform.containers.OpenStageResult
 import com.pico.spatial.ui.platform.containers.StageStyle
 import com.pico.spatial.ui.platform.containers.closeStage
 import com.pico.spatial.ui.platform.containers.closeWindowContainer
-import com.pico.spatial.ui.platform.containers.minimizeWindowContainer
 import com.pico.spatial.ui.platform.containers.openStage
 import com.pico.spatial.ui.platform.containers.openWindowContainer
-import com.pico.spatial.ui.platform.containers.restoreWindowContainer
-import com.picopui.fusionapp.logger.logging.Logger
-import com.picoxr.destinationvideo.DestinationPlayerActivity
-import com.picoxr.mediapack.common.PXRPlayer
-import com.picoxr.mediapack.common.PXRPlayer.RepeatMode
-import com.picoxr.mediapack.core.base.const.PLAYBACK_SPACE_ID
-import com.picoxr.mediapack.core.ecs.entity.AmbisonicManager
-import com.picoxr.mediapack.core.base.const.VideoType
-import com.picoxr.mediapack.core.base.model.PlayerItem
-import com.picoxr.mediapack.player.PicoPlayer
-import com.picoxr.mediapack.ui.PlaybackController
-import com.picoxr.mediapack.ui.VideoPlaybackView
-import com.picoxr.mediapack.ui.controller.bean.PlaybackEvent
-import com.picoxr.mediapack.ui.controller.bean.PlaybackEventType
-import com.picoxr.mediapack.ui.controller.bean.PlaybackStates
-import com.picoxr.mediapack.ui.controller.bean.rememberPlaybackStates
-import com.picoxr.mediapack.ui.utils.PlaybackControllerManager
 import kotlinx.coroutines.launch
 
-private const val DESTINATION_WINDOW_ID = DESTINATION_PLAYER_WINDOW_ID
-private const val TAG = "DestinationPlayback"
-
 /**
- * Bridges MediaPack's immersive state changes to the MediaPack playback stage.
- */
-class DestinationPlaybackController(
-    private val context: Application,
-) : PlaybackController(context) {
-    var shareSpaceActivity: Activity? = null
-    var onFullSpaceClosed: (() -> Unit)? = null
-    private var isFullSpaceOpen = false
-    private var isClosingFullSpace = false
-    var hasShowWindowContainer = true
-
-    override fun onControllerEvent(
-        event: PlaybackEvent,
-        playbackStates: PlaybackStates,
-    ) {
-        Log.i(TAG, "onControllerEvent: ${event.type}, immersive=${isImmersive.value}")
-        if (event.type == PlaybackEventType.CLICK_FULL_SCREEN) {
-            currentPlayItem.value?.id
-                ?.toIntOrNull()
-                ?.let { DestinationReturnRoute.requestDetail(context, it) }
-            context.openWindowContainer(DESTINATION_HOME_WINDOW_ID)
-            context.closeWindowContainer(DESTINATION_PLAYER_WINDOW_ID)
-            return
-        }
-        super.onControllerEvent(event, playbackStates)
-    }
-
-    override fun openImmersiveSpace() {
-        ProcessLifecycleOwner.get().lifecycleScope.launch {
-            context.openStage(PLAYBACK_SPACE_ID, StageStyle.Full)
-        }
-    }
-
-    override fun hideWindowContainer() {
-        Logger.i(TAG, "hideWindowContainer.minimizeWindowContainer")
-
-        val isStage = stageOpenChecker()
-        Logger.i(TAG, "hideWindowContainer: isStage:$isStage")
-        if (isStage) {
-            // only system app
-            context.minimizeWindowContainer(DESTINATION_WINDOW_ID)
-        } else {
-            shareSpaceActivity?.moveTaskToBack(false)
-        }
-        hasShowWindowContainer = false
-    }
-
-    override fun showWindowContainer() {
-
-        if (hasShowWindowContainer) {
-            return
-        }
-        val isStage = stageOpenChecker()
-        Logger.i(TAG, "showWindowContainer: $isStage")
-        if (isStage) {
-            val result = context.restoreWindowContainer(DESTINATION_WINDOW_ID)
-            Logger.i(TAG, "showWindowContainer: $result")
-        } else {
-            Logger.i(TAG, "showWindowContainer")
-            val intent = Intent(context, DestinationPlayerActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            context.startActivity(intent)
-        }
-        hasShowWindowContainer = true
-    }
-
-
-    var stageOpenChecker: () -> Boolean = {
-        if (SpatialBuild.isSpatialPlatform()) {
-            SpaceContext.checkSelfFullSpace() == SpaceContext.STATE_FULL_SPACE
-        } else {
-            false
-        }
-    }
-}
-
-/**
- * Presents the MediaPack-backed window player and opens its Full Space stage.
+ * Displays the selected video in either the playback window or Full Space stage.
  */
 @Composable
-fun DestinationPlayerWindow(videoId: Int?) {
+fun DestinationPlayerWindow(
+    videoId: Int?,
+    initialPositionMs: Long = 0L,
+    isFullSpace: Boolean = false,
+) {
     val context = LocalContext.current
     val video = remember(videoId) {
         videoId?.let(DestinationCatalog::findVideo)
@@ -148,6 +61,7 @@ fun DestinationPlayerWindow(videoId: Int?) {
             Text(
                 text = "无法打开播放页面",
                 style = PicoTheme.typography.bodyMedium,
+                color = Color.White,
             )
         }
         return
@@ -155,112 +69,165 @@ fun DestinationPlayerWindow(videoId: Int?) {
 
     DestinationPlayer(
         video = video,
-        onClose = {
-            context.closeWindowContainer(DESTINATION_PLAYER_WINDOW_ID)
-        },
-        onFullSpaceClosed = {
-            // MediaPack restores the playback window; keep this Activity mounted.
+        initialPositionMs = initialPositionMs,
+        isFullSpace = isFullSpace,
+        onReturnToDetails = {
+            DestinationReturnRoute.requestDetail(context, video.id)
+            context.openWindowContainer(DESTINATION_HOME_WINDOW_ID)
+            if (isFullSpace) {
+                closeStage()
+            } else {
+                context.closeWindowContainer(DESTINATION_PLAYER_WINDOW_ID)
+            }
         },
     )
 }
 
 /**
- * Presents the MediaPack-backed window player and opens its Full Space stage.
+ * Plays a catalog item with Media3 and transfers playback position between containers.
  */
 @Composable
-fun DestinationPlayer(
+private fun DestinationPlayer(
     video: DestinationVideo,
-    onClose: () -> Unit,
-    onFullSpaceClosed: () -> Unit,
+    initialPositionMs: Long,
+    isFullSpace: Boolean,
+    onReturnToDetails: suspend () -> Unit,
 ) {
     val context = LocalContext.current
-    val controller = remember { PlaybackControllerManager.getController() }
-    val isConnected = controller.hasConnectedPlayer()
-    val ownsPlayer = !isConnected
-    val player: PXRPlayer = remember(controller, video.id) {
-        if (!isConnected) {
-            PicoPlayer(context)
-        } else {
-            controller.player.value ?: PicoPlayer(context)
+    val scope = rememberCoroutineScope()
+    val player = remember(video.id, initialPositionMs) {
+        ExoPlayer.Builder(context.applicationContext).build().apply {
+            repeatMode = Player.REPEAT_MODE_OFF
+            setMediaItem(
+                MediaItem.fromUri(videoSourceUri(video, context.packageName)),
+                initialPositionMs.coerceAtLeast(video.startSeconds * 1_000L),
+            )
+            prepare()
+            playWhenReady = true
         }
     }
-    val playbackStates = rememberPlaybackStates()
 
-    BackHandler(onBack = onClose)
-
-    DisposableEffect(controller, playbackStates, video.id) {
-        controller.bindPlaybackState(playbackStates)
-        (controller as? DestinationPlaybackController)?.onFullSpaceClosed = onFullSpaceClosed
-
-        player.setRepeatMode(RepeatMode.REPEAT_MODE_ONE_OFF)
-        if (!controller.hasConnectedPlayer()) {
-            controller.connectPlayer(player)
+    DisposableEffect(player) {
+        onDispose {
+            player.release()
         }
+    }
 
-        val videoUri = when (val source = video.source) {
-            is VideoSource.Raw -> "android.resource://${context.packageName}/${source.resourceId}"
-            is VideoSource.Remote -> source.url
-        }.toUri().toString()
+    fun playbackBundle() = Bundle().apply {
+        putInt(DESTINATION_PLAYER_VIDEO_ID, video.id)
+        putLong(DESTINATION_PLAYER_POSITION_MS, player.currentPosition.coerceAtLeast(0L))
+    }
 
-        Logger.i(
-            TAG,
-            "DestinationPlayer.setPlayItem: $videoUri, previous=${controller.currentPlayItem.value?.path}",
-        )
-        controller.setPlayItem(
-            PlayerItem().apply {
-                id = video.id.toString()
-                name = video.name
-                path = videoUri
-                videoOriginType = VideoType.TYPE_2D.type
-                videoType = VideoType.TYPE_2D.type
-                playedTime = video.startSeconds * 1_000L
+    val exitPlayback: () -> Unit = {
+        player.pause()
+        scope.launch {
+            onReturnToDetails()
+        }
+        Unit
+    }
+
+    BackHandler(onBack = exitPlayback)
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black),
+    ) {
+        AndroidView(
+            modifier = Modifier.fillMaxSize(),
+            factory = { viewContext ->
+                PlayerView(viewContext).apply {
+                    layoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                    )
+                    useController = true
+                    controllerAutoShow = true
+                    controllerShowTimeoutMs = 3_000
+                    setShowBuffering(PlayerView.SHOW_BUFFERING_WHEN_PLAYING)
+                    keepScreenOn = true
+                    this.player = player
+                }
+            },
+            update = { playerView ->
+                playerView.player = player
             },
         )
 
-        // Keep the page setup aligned with SpatialVideoPage: configure controller first,
-        // then start the connected player so MediaPack owns share-space and full-space UI.
-        controller.setVideoType(VideoType.TYPE_2D.type)
-        playbackStates.setVideoType(VideoType.TYPE_2D.type)
-        controller.setUseMono2Stereo(true)
-        controller.setWindowBoundsSize(1280f to 720f)
-
-        player.prepare()
-        if (video.startSeconds > 0) {
-            player.seekTo(video.startSeconds * 1_000L)
-        }
-        player.play()
-
-        onDispose {
-            Logger.i(TAG, "DestinationPlayer: onDispose")
-            (controller as? DestinationPlaybackController)?.onFullSpaceClosed = null
-            if (controller.isImmersive.value) {
-                controller.setImmersive(false)
-            }
-            player.stop()
-            player.release()
-            AmbisonicManager.releaseAmbisonicResource()
-            controller.setPlayedProgress(
-                controller.currentPlayItem.value?.path,
-                playbackStates.playedProgress.floatValue,
+        Row(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(24.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            PlayerAction(
+                text = "返回详情",
+                onClick = exitPlayback,
             )
-            controller.disconnectPlayer()
+            if (isFullSpace) {
+                PlayerAction(
+                    text = "退出全空间",
+                    onClick = {
+                        player.pause()
+                        val resumeBundle = playbackBundle()
+                        scope.launch {
+                            closeStage()
+                            context.openWindowContainer(
+                                DESTINATION_PLAYER_WINDOW_ID,
+                                bundle = resumeBundle,
+                            )
+                        }
+                    },
+                )
+            } else {
+                PlayerAction(
+                    text = "全空间",
+                    onClick = {
+                        player.pause()
+                        scope.launch {
+                            val result = context.openStage(
+                                DESTINATION_PLAYER_STAGE_ID,
+                                StageStyle.Full,
+                                bundle = playbackBundle(),
+                            )
+                            if (result is OpenStageResult.Allowed) {
+                                context.closeWindowContainer(DESTINATION_PLAYER_WINDOW_ID)
+                            } else {
+                                player.play()
+                            }
+                        }
+                    },
+                )
+            }
         }
     }
+}
 
-    controller.setShowPlayList(false)
-    controller.setShowSettings(false)
-    controller.setShowPlaybackControls(true)
-    controller.setShowEnterFullSpace(true)
-    controller.setEnterFullSpaceEnabled(true)
-    controller.setShowFullScreenButton(!controller.isImmersive.value)
-    controller.setFullScreenButtonEnabled(true)
-    controller.setShowSpeedButton(true)
-    controller.setSpeedOptions(listOf(0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 2.0f))
+private fun videoSourceUri(
+    video: DestinationVideo,
+    packageName: String,
+) = when (val source = video.source) {
+    is VideoSource.Raw -> "android.resource://$packageName/${source.resourceId}".toUri()
+    is VideoSource.Remote -> source.url.toUri()
+}
 
-    VideoPlaybackView(
-        playbackController = controller,
-        playbackStates = playbackStates,
-        modifier = Modifier.fillMaxSize(),
-        showsPlaybackControls = true,
-    )
+@Composable
+private fun PlayerAction(
+    text: String,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color(0xCC242424))
+            .clickable(onClick = onClick)
+            .padding(horizontal = 18.dp, vertical = 10.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = text,
+            style = PicoTheme.typography.bodyMedium,
+            color = Color.White,
+        )
+    }
 }

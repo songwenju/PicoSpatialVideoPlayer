@@ -6,9 +6,7 @@ composeCompiler = "2.1.21"
 
 ## PICO
 ## SpatialSDK
-spatialBOM = "6.1.5"
-framework-extension = "0.8.10"
-mediapackVersion = "0.3.9-rc.0"
+spatialBOM = "6.1.9"
 
 
 coreKtx = "1.10.1"
@@ -22,6 +20,7 @@ activityCompose = "1.8.0"
 androidx-lifecycle = "2.8.4"
 runtimeLivedata = "1.7.4"
 exoPlayerVersion = "1.4.1"
+composeUi = "1.10.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -31,10 +30,10 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
-androidx-ui = { group = "androidx.compose.ui", name = "ui" }
-androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
-androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
-androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "composeUi" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "composeUi" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version.ref = "composeUi" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version.ref = "composeUi" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycleRuntimeKtx" }
 lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "androidx-lifecycle" }
@@ -46,15 +45,11 @@ spatialBOM = { group = "com.pico.spatial", name = "bom", version.ref = "spatialB
 spatialcore = { group = "com.pico.spatial.core", name = "core" }
 spatialui-design = { group = "com.pico.spatial.ui", name = "design" }
 spatialui-foundation = { group = "com.pico.spatial.ui", name = "foundation" }
-spaceos-framework-extension = { group = "com.spaceos.framework.extension", name = "spaceos-framework-extension", version.ref = "framework-extension" }
 spatial-tracking = { group = "com.pico.spatial.tracking", name = "tracking", version.ref = "spatialBOM" }
-mediapack-common = { group = "com.picoxr.mediapack", name = "common", version.ref = "mediapackVersion" }
-mediapack-player = { group = "com.picoxr.mediapack", name = "player", version.ref = "mediapackVersion" }
-mediapack-ui = { group = "com.picoxr.mediapack", name = "ui", version.ref = "mediapackVersion" }
-mediapack-playbackcore = { group = "com.picoxr.mediapack", name = "playbackcore", version.ref = "mediapackVersion" }
 # ExoPlayer 配置依赖项
 exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "exoPlayerVersion" }
 exoPlayerCommon = { group = "androidx.media3", name = "media3-common", version.ref = "exoPlayerVersion" }
+exoplayer-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "exoPlayerVersion" }
 
 
 [plugins]

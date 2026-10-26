@@ -93,12 +93,7 @@ dependencies {
     implementation(libs.spatialui.design)
     implementation(libs.spatialui.foundation)
 
-    implementation(libs.mediapack.common)
-    implementation(libs.mediapack.player)
-    implementation(libs.mediapack.ui)
-    implementation(libs.mediapack.playbackcore)
-
-    compileOnly(libs.spaceos.framework.extension)
-
-
+    implementation(libs.exoplayer)
+    implementation(libs.exoPlayerCommon)
+    implementation(libs.exoplayer.ui)
 }

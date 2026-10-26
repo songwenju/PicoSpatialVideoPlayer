@@ -16,15 +16,15 @@ import com.pico.spatial.ui.foundation.dsl.SpatialAppScope
 import com.pico.spatial.ui.foundation.dsl.Stage
 import com.pico.spatial.ui.foundation.dsl.WindowContainer
 import com.pico.spatial.ui.platform.resize.ContainerResizeRestriction
+import com.picoxr.destinationvideo.destination.DESTINATION_PLAYER_POSITION_MS
+import com.picoxr.destinationvideo.destination.DESTINATION_PLAYER_STAGE_ID
 import com.picoxr.destinationvideo.destination.DESTINATION_PLAYER_VIDEO_ID
 import com.picoxr.destinationvideo.destination.DESTINATION_PLAYER_WINDOW_ID
 import com.picoxr.destinationvideo.destination.DestinationPlayerWindow
 import com.picoxr.destinationvideo.screens.MainScreen
-import com.picoxr.mediapack.core.base.const.PLAYBACK_SPACE_ID
-import com.picoxr.mediapack.ui.PlaybackStageContent
 
 /**
- * Registers the primary catalog window and MediaPack Full Space playback stage.
+ * Registers the catalog window, playback window, and Full Space playback stage.
  */
 @SuppressLint("RestrictedApi")
 fun mainApp(scope: SpatialAppScope) =
@@ -52,6 +52,10 @@ fun mainApp(scope: SpatialAppScope) =
             val playerVideoId = bundle
                 ?.takeIf { it.containsKey(DESTINATION_PLAYER_VIDEO_ID) }
                 ?.getInt(DESTINATION_PLAYER_VIDEO_ID)
+            val initialPositionMs = bundle
+                ?.takeIf { it.containsKey(DESTINATION_PLAYER_POSITION_MS) }
+                ?.getLong(DESTINATION_PLAYER_POSITION_MS)
+                ?: 0L
             PicoTheme {
                 Box(
                     modifier = Modifier
@@ -63,15 +67,31 @@ fun mainApp(scope: SpatialAppScope) =
                         )
                         .background(Color.Transparent),
                 ) {
-                    DestinationPlayerWindow(videoId = playerVideoId)
+                    DestinationPlayerWindow(
+                        videoId = playerVideoId,
+                        initialPositionMs = initialPositionMs,
+                    )
                 }
             }
         }
         Stage(
-            id = PLAYBACK_SPACE_ID,
+            id = DESTINATION_PLAYER_STAGE_ID,
             immersion = Immersion.Default,
         ) {
-            PlaybackStageContent()
+            val playerVideoId = bundle
+                ?.takeIf { it.containsKey(DESTINATION_PLAYER_VIDEO_ID) }
+                ?.getInt(DESTINATION_PLAYER_VIDEO_ID)
+            val initialPositionMs = bundle
+                ?.takeIf { it.containsKey(DESTINATION_PLAYER_POSITION_MS) }
+                ?.getLong(DESTINATION_PLAYER_POSITION_MS)
+                ?: 0L
+            PicoTheme {
+                DestinationPlayerWindow(
+                    videoId = playerVideoId,
+                    initialPositionMs = initialPositionMs,
+                    isFullSpace = true,
+                )
+            }
         }
     }
 

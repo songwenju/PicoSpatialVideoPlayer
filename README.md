@@ -4,7 +4,7 @@ A spatial video experience built for Vibe Lab.
 
 PicoSpatialVideoPlayer is a sample application built for PICO spatial
 computing devices. It uses the PICO Spatial SDK to present a browsable video
-catalog in spatial windows and PICO MediaPack to provide windowed and Full Space
+catalog in spatial windows and AndroidX Media3 to provide windowed and Full Space
 playback.
 
 The application UI is currently provided in Simplified Chinese.
@@ -44,7 +44,7 @@ The application UI is currently provided in Simplified Chinese.
 - Playback from packaged Android resources and remote video URLs
 - Dedicated, resizable playback window with standard playback controls
 - Playback speed selection from 0.5x to 2.0x
-- Full Space playback through a PICO Spatial SDK stage
+- Full Space playback through a PICO Spatial SDK stage with position handoff
 - Return routing from the player to the selected video's detail page
 
 The New and Favorites tabs are present as placeholders and do not yet contain
@@ -53,9 +53,9 @@ functional content.
 ## Technology
 
 - Kotlin and Android
-- PICO Spatial SDK 6.1.5
+- PICO Spatial SDK 6.1.9
 - PICO Spatial UI with Jetpack Compose
-- PICO MediaPack 0.3.9-rc.0
+- AndroidX Media3 1.4.1
 - Android Gradle Plugin 8.11.0
 - Android API 35
 
@@ -72,7 +72,7 @@ app/src/main/java/com/picoxr/destinationvideo/
 └── destination/
     ├── DestinationApp.kt      Catalog UI and navigation
     ├── DestinationCatalog.kt  Video metadata and Up Next persistence
-    └── DestinationPlayer.kt   MediaPack playback integration
+    └── DestinationPlayer.kt   Media3 playback and container handoff
 ```
 
 ## Requirements
@@ -81,8 +81,8 @@ app/src/main/java/com/picoxr/destinationvideo/
 - Android Studio or JDK 17
 - Android SDK 35
 - ADB for device installation and launch
-- Network access to the Maven repositories configured in
-  `settings.gradle.kts`
+- Network access to Google Maven, Maven Central, and the public Volcengine
+  repository configured in `settings.gradle.kts`
 
 Remote catalog items also require an internet connection at runtime.
 
