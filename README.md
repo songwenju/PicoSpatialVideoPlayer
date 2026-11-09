@@ -1,19 +1,19 @@
-# PicoSpatialVideoPlayer
+# PICOSpatialVideoPlayer
 
 A spatial video experience built for Vibe Lab.
 
-PicoSpatialVideoPlayer is a sample application built for PICO spatial
+PICOSpatialVideoPlayer is a sample application built for PICO spatial
 computing devices. It uses the PICO Spatial SDK to present a browsable video
 catalog in spatial windows and AndroidX Media3 to provide windowed and Full Space
 playback.
 
 The application UI is currently provided in Simplified Chinese.
 
-![PicoSpatialVideoPlayer](images/PicoSpatialVideoPlayer_2560x1440.png)
+![PICOSpatialVideoPlayer](images/PicoSpatialVideoPlayer_2560x1440.png)
 
 ## Demo
 
-[![Watch the PicoSpatialVideoPlayer demo](images/PicoSpatialVideoPlayer_2560x1440.png)](images/20261017151053170.mp4)
+[![Watch the PICOSpatialVideoPlayer demo](images/PicoSpatialVideoPlayer_2560x1440.png)](images/20261017151053170.mp4)
 
 [Watch the 40-second demo video (MP4, 21 MB)](images/20261017151053170.mp4)
 

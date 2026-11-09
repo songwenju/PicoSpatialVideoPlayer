@@ -11,7 +11,7 @@
 ### 1. Understanding the Context
 Before writing tests for this project, understand:
 - **ECS (Entity-Component-System)**: Core logic in `playbackcore` follows ECS.
-- **Spatial UI**: Interaction with Pico Spatial UI components.
+- **Spatial UI**: Interaction with PICO Spatial UI components.
 - **Media Playback**: Logic around `PXRPlayer` and `CypressPlayer`.
 
 ### 2. Test Coverage Requirements
